@@ -1,3 +1,12 @@
 spring:
   application:
     name: pizzaria
+
+  datasource:
+    url: jdbc:postgresql://localhost:5555/pizzaria
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
