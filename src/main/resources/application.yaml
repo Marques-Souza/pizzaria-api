@@ -10,3 +10,6 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+cloudinary:
+  url: ${CLOUDINARY_URL}
