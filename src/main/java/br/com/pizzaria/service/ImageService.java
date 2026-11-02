@@ -1,6 +1,8 @@
 package br.com.pizzaria.service;
 
 import br.com.pizzaria.dtos.ImageUploadResult;
+import br.com.pizzaria.exception.ImageStorageException;
+import br.com.pizzaria.exception.InvalidImageException;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import lombok.RequiredArgsConstructor;
