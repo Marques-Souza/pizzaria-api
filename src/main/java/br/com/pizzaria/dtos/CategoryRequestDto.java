@@ -13,4 +13,8 @@ public record CategoryRequestDto(
         @Size(min = 3, max = 255, message = "Description must be between 3 and 255 characters")
         String description
 ) {
+        public CategoryRequestDto {
+                name = name == null ? null : name.trim();
+                description = description == null ? null : description.trim();
+        }
 }

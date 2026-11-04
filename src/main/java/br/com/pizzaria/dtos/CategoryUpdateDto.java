@@ -11,4 +11,9 @@ public record CategoryUpdateDto(
         @Size(min = 3, max = 255, message = "Description must be between 3 and 255 characters")
         String description
 ) {
+
+        public CategoryUpdateDto {
+                name = name != null ? name.trim() : null;
+                description = description != null ? description.trim() : null;
+        }
 }
