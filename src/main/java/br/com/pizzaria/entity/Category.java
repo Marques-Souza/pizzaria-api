@@ -26,6 +26,7 @@ public class Category {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
+
     @CreationTimestamp
     @Column(nullable = false)
     private LocalDateTime createdAt;
