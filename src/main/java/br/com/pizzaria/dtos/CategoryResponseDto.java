@@ -7,8 +7,6 @@ public record CategoryResponseDto(
 
         UUID id,
         String name,
-        String description,
-        boolean active,
-        LocalDateTime createdAt
+        String description
 ) {
 }
