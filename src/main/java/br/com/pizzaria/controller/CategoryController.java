@@ -35,7 +35,6 @@ public class CategoryController {
         return ResponseEntity.ok(response);
     }
 
-
     @GetMapping
     public  ResponseEntity<List<CategoryResponseDto>> findAll(){
         List<CategoryResponseDto> response = categoryService.findAll();
@@ -46,6 +45,12 @@ public class CategoryController {
     public ResponseEntity<CategoryResponseDto> update(@PathVariable UUID id, @Valid @RequestBody CategoryUpdateDto dto){
         CategoryResponseDto response = categoryService.update(id, dto);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        categoryService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 

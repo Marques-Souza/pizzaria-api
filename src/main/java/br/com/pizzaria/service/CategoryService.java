@@ -2,8 +2,11 @@ package br.com.pizzaria.service;
 
 import br.com.pizzaria.dtos.CategoryRequestDto;
 import br.com.pizzaria.dtos.CategoryResponseDto;
+import br.com.pizzaria.dtos.CategoryUpdateDto;
 import br.com.pizzaria.entity.Category;
 import br.com.pizzaria.exception.CategoryAlreadyExistsException;
+import br.com.pizzaria.exception.CategoryInactiveException;
+import br.com.pizzaria.exception.CategoryNotFoundException;
 import br.com.pizzaria.mapper.CategoryMapper;
 import br.com.pizzaria.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +46,25 @@ public class CategoryService {
         return categoryRepository.findAll().stream()
                 .map(categoryMapper::toResponse)
                 .toList();
+    }
+
+    @Transactional
+    public CategoryResponseDto update(UUID id, CategoryUpdateDto dto){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found."));
+        if (!category.isActive()){
+            throw new CategoryInactiveException("Category is inactive.");
+        }
+        categoryMapper.update(dto, category);
+        Category saved = categoryRepository.save(category);
+        return categoryMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public void delete(UUID id){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found."));
+        category.setActive(false);
+        categoryRepository.save(category);
     }
 }
