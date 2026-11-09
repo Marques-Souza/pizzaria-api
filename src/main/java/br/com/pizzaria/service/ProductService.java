@@ -8,6 +8,7 @@ import br.com.pizzaria.entity.Product;
 import br.com.pizzaria.exception.CategoryInactiveException;
 import br.com.pizzaria.exception.CategoryNotFoundException;
 import br.com.pizzaria.exception.ProductAlreadyExistsException;
+import br.com.pizzaria.exception.ProductNotFoundException;
 import br.com.pizzaria.mapper.ProductMapper;
 import br.com.pizzaria.repository.CategoryRepository;
 import br.com.pizzaria.repository.ProductRepository;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -45,6 +48,13 @@ public class ProductService {
 
         Product saved = productRepository.save(product);
         return productMapper.toResponse(saved);
-
     }
+
+    @Transactional(readOnly = true)
+    public ProductResponseDto findById(UUID id){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+        return productMapper.toResponse(product);
+    }
+
 }

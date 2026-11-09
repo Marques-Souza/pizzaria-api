@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.UUID;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/products")
@@ -24,5 +26,11 @@ public class ProductController {
             @RequestPart("file")MultipartFile file){
         ProductResponseDto response = productService.create(dto, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseDto> findById(@PathVariable UUID id){
+        ProductResponseDto response = productService.findById(id);
+        return ResponseEntity.ok(response);
     }
 }
