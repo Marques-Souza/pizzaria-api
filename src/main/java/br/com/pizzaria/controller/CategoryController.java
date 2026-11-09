@@ -2,6 +2,7 @@ package br.com.pizzaria.controller;
 
 import br.com.pizzaria.dtos.CategoryRequestDto;
 import br.com.pizzaria.dtos.CategoryResponseDto;
+import br.com.pizzaria.dtos.CategoryUpdateDto;
 import br.com.pizzaria.repository.CategoryRepository;
 import br.com.pizzaria.service.CategoryService;
 import jakarta.validation.Valid;
@@ -38,6 +39,12 @@ public class CategoryController {
     @GetMapping
     public  ResponseEntity<List<CategoryResponseDto>> findAll(){
         List<CategoryResponseDto> response = categoryService.findAll();
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<CategoryResponseDto> update(@PathVariable UUID id, @Valid @RequestBody CategoryUpdateDto dto){
+        CategoryResponseDto response = categoryService.update(id, dto);
         return ResponseEntity.ok(response);
     }
 
