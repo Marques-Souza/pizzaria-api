@@ -13,7 +13,6 @@ spring:
 
   flyway:
     enabled: true
-    repair: true
 
   server:
     multipart:

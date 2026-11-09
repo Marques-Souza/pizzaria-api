@@ -37,7 +37,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryResponseDto findById(UUID id){
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found."));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found."));
         return categoryMapper.toResponse(category);
     }
 
@@ -51,7 +51,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponseDto update(UUID id, CategoryUpdateDto dto){
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found."));
+                .orElseThrow(() -> new CategoryNotFoundException("Category not found."));
         if (!category.isActive()){
             throw new CategoryInactiveException("Category is inactive.");
         }
