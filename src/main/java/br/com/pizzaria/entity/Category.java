@@ -26,6 +26,9 @@ public class Category {
     @Column(name = "description", nullable = false, length = 255)
     private String description;
 
+    @Column(name = "active" )
+    private boolean active = true;
+
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -50,6 +53,6 @@ public class Category {
 
     @Override
     public String toString() {
-        return "Category [id=" + id + ", name=" + name + ", description=" + description + "]";
+        return "Category [id=" + id + ", name=" + name + ", description=" + description + " , active=" + active + "]";
     }
 }

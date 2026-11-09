@@ -7,6 +7,7 @@ public record CategoryResponseDto(
 
         UUID id,
         String name,
-        String description
+        String description,
+        boolean active
 ) {
 }
