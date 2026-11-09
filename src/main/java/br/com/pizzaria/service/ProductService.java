@@ -13,6 +13,10 @@ import br.com.pizzaria.mapper.ProductMapper;
 import br.com.pizzaria.repository.CategoryRepository;
 import br.com.pizzaria.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,6 +59,26 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found."));
         return productMapper.toResponse(product);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<ProductResponseDto> findAll(Pageable pageable, UUID categoryId){
+        Page<Product> products;
+
+        if (categoryId == null){
+            products = productRepository.findAllByDisabledFalse(pageable);
+        }else {
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new CategoryNotFoundException("Category not found."));
+
+            if (!category.isActive()){
+                throw new CategoryInactiveException("Category is inactive.");
+            }
+
+            products = productRepository
+                    .findAllByDisabledFalseAndCategory_id(categoryId, pageable);
+        }
+        return products.map(productMapper::toResponse);
     }
 
 }

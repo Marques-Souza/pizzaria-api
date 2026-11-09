@@ -5,6 +5,10 @@ import br.com.pizzaria.dtos.ProductResponseDto;
 import br.com.pizzaria.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +36,12 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> findById(@PathVariable UUID id){
         ProductResponseDto response = productService.findById(id);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<ProductResponseDto>> findAll(
+            @PageableDefault(size = 10, sort = "name", direction = Sort.Direction.DESC)Pageable pageable,
+            @RequestParam(required = false) UUID categoryId){
+        return ResponseEntity.ok(productService.findAll(pageable, categoryId));
     }
 }
