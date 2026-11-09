@@ -45,6 +45,7 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT, ex.getMessage());
         problem.setTitle("Category Already Exists");
         return  problem;
+
     }
 
     @ExceptionHandler(CategoryNotFoundException.class)
@@ -64,6 +65,14 @@ public class GlobalExceptionHandler {
                 HttpStatus.BAD_REQUEST, "Validation failed");
         problem.setTitle("Invalid request");
         problem.setProperty("errors", errors);
+        return  problem;
+    }
+
+    @ExceptionHandler(CategoryInactiveException.class)
+    public ProblemDetail handlerCategoryInactive(CategoryInactiveException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Category is inactive");
         return  problem;
     }
 }
