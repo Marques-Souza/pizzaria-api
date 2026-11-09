@@ -1,0 +1,7 @@
+package br.com.pizzaria.exception;
+
+public class ProductAlreadyExistsException extends RuntimeException {
+    public ProductAlreadyExistsException(String message) {
+        super(message);
+    }
+}

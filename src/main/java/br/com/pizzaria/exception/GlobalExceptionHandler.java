@@ -75,4 +75,21 @@ public class GlobalExceptionHandler {
         problem.setTitle("Category is inactive");
         return  problem;
     }
+
+    @ExceptionHandler(ProductAlreadyExistsException.class)
+    public ProblemDetail handlerAlreadyExists(ProductAlreadyExistsException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Product Already Exists");
+        return  problem;
+
+    }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ProblemDetail handlerNotFound(ProductNotFoundException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Product Not Found");
+        return  problem;
+    }
 }
