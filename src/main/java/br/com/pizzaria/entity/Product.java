@@ -36,6 +36,9 @@ public class Product {
     @Column(name = "banner", nullable = false, length = 400)
     private String banner;
 
+    @Column(name = "banner_public_id", length = 255)
+    private String bannerPublicId;
+
     @Column(name = "disabled", nullable = false)
     private boolean disabled = false;
 
