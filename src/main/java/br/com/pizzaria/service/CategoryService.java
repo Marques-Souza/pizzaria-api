@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +31,14 @@ public class CategoryService {
         return categoryMapper.toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
+    public CategoryResponseDto findById(UUID id){
+        Category category = categoryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Category not found."));
+        return categoryMapper.toResponse(category);
+    }
+
+    @Transactional(readOnly = true)
     public List<CategoryResponseDto> findAll(){
         return categoryRepository.findAll().stream()
                 .map(categoryMapper::toResponse)

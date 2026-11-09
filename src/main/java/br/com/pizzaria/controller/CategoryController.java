@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +26,12 @@ public class CategoryController {
            @Valid @RequestBody CategoryRequestDto dto){
        CategoryResponseDto response = categoryService.create(dto);
        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryResponseDto> findById(@PathVariable UUID id){
+        CategoryResponseDto response = categoryService.findById(id);
+        return ResponseEntity.ok(response);
     }
 
 
