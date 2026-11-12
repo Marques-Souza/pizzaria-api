@@ -92,4 +92,12 @@ public class GlobalExceptionHandler {
         problem.setTitle("Product Not Found");
         return  problem;
     }
+
+    @ExceptionHandler(ProductUpdateEmptyException.class)
+    public ProblemDetail handleProductUpdateEmpty(ProductUpdateEmptyException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.BAD_REQUEST, ex.getMessage());
+        problem.setTitle("Empty Product Update");
+        return problem;
+    }
 }

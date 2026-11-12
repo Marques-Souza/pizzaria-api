@@ -2,6 +2,7 @@ package br.com.pizzaria.controller;
 
 import br.com.pizzaria.dtos.ProductRequestDto;
 import br.com.pizzaria.dtos.ProductResponseDto;
+import br.com.pizzaria.dtos.ProductUpdateDto;
 import br.com.pizzaria.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,15 @@ public class ProductController {
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> findById(@PathVariable UUID id){
         ProductResponseDto response = productService.findById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductResponseDto> update(
+            @PathVariable UUID id,
+            @Valid @RequestPart("product") ProductUpdateDto dto,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        ProductResponseDto response = productService.update(id, dto, file);
         return ResponseEntity.ok(response);
     }
 

@@ -50,11 +50,28 @@ public class ImageService {
         }
     }
 
-    public void delete(String publicId){
-        try {
+    public void delete(String publicId) {
+        if (publicId == null || publicId.isBlank()) {
+            return;
+        }
 
-        }catch (Exception ex){
-            log.warn("Could not delete image", ex);
+        try {
+            Map<?, ?> result = cloudinary.uploader().destroy(
+                    publicId,
+                    ObjectUtils.asMap("resource_type", "image")
+            );
+
+            Object status = result.get("result");
+            if (!"ok".equals(status) && !"not found".equals(status)) {
+                throw new ImageStorageException(
+                        "Cloudinary could not delete image: " + status,
+                        new IllegalStateException("Unexpected Cloudinary response")
+                );
+            }
+        } catch (ImageStorageException ex) {
+            throw ex;
+        } catch (Exception ex) {
+            throw new ImageStorageException("Could not delete image", ex);
         }
     }
 }
