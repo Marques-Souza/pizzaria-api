@@ -167,7 +167,9 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product not found."));
         product.setDisabled(true);
-        productRepository.save(product);
+        Product saved = productRepository.save(product);
     }
+
+
 
 }

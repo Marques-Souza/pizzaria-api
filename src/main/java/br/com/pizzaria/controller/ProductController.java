@@ -39,14 +39,6 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
-    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductResponseDto> update(
-            @PathVariable UUID id,
-            @Valid @RequestPart("product") ProductUpdateDto dto,
-            @RequestPart(value = "file", required = false) MultipartFile file) {
-        ProductResponseDto response = productService.update(id, dto, file);
-        return ResponseEntity.ok(response);
-    }
 
     @GetMapping
     public ResponseEntity<Page<ProductResponseDto>> findAll(
@@ -54,10 +46,22 @@ public class ProductController {
             @RequestParam(required = false) UUID categoryId){
         return ResponseEntity.ok(productService.findAll(pageable, categoryId));
     }
+
+    @PatchMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductResponseDto> update(
+            @PathVariable UUID id,
+            @ModelAttribute @Valid ProductUpdateDto dto,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        ProductResponseDto response = productService.update(id, dto, file);
+        return ResponseEntity.ok(response);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable UUID id){
         productService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+
 
 }
