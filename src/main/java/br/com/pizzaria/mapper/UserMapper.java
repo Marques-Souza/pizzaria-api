@@ -1,4 +1,4 @@
-package br.com.pizzaria.repository;
+package br.com.pizzaria.mapper;
 
 import br.com.pizzaria.dtos.UserRequestDto;
 import br.com.pizzaria.dtos.UserResponseDto;
