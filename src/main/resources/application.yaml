@@ -14,10 +14,15 @@ spring:
   flyway:
     enabled: true
 
-  server:
+  servlet:
     multipart:
       max-file-size: 5MB
       max-request-size: 5MB
+
+
+security:
+  jwt:
+    secret: ${JWT_SECRET}
 
 cloudinary:
   url: ${CLOUDINARY_URL}
