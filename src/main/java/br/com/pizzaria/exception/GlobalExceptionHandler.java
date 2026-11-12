@@ -100,4 +100,21 @@ public class GlobalExceptionHandler {
         problem.setTitle("Empty Product Update");
         return problem;
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ProblemDetail handlerAlreadyExists(UserAlreadyExistsException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("User Already Exists");
+        return  problem;
+
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ProblemDetail handlerNotFound(UserNotFoundException ex){
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("User Not Found");
+        return  problem;
+    }
 }
