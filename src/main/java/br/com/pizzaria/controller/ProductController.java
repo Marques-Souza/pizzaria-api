@@ -63,5 +63,9 @@ public class ProductController {
     }
 
 
-
+    @PutMapping("/{id}/reactivate")
+    public ResponseEntity<ProductResponseDto> reactivate(@PathVariable UUID id){
+        ProductResponseDto response = productService.reactivate(id);
+        return ResponseEntity.ok(response);
+    }
 }

@@ -171,5 +171,18 @@ public class ProductService {
     }
 
 
+    @Transactional
+    public ProductResponseDto reactivate(UUID id){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+
+        if (!product.getCategory().isActive()){
+            throw new CategoryInactiveException("Category is inactive.");
+        }
+
+        product.setDisabled(false);
+        Product saved = productRepository.save(product);
+        return productMapper.toResponse(saved);
+    }
 
 }
