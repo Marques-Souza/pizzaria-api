@@ -162,4 +162,12 @@ public class ProductService {
         return productMapper.toResponse(saved);
     }
 
+    @Transactional
+    public void delete(UUID id){
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found."));
+        product.setDisabled(true);
+        productRepository.save(product);
+    }
+
 }

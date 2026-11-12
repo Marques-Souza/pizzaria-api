@@ -54,4 +54,10 @@ public class ProductController {
             @RequestParam(required = false) UUID categoryId){
         return ResponseEntity.ok(productService.findAll(pageable, categoryId));
     }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable UUID id){
+        productService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
