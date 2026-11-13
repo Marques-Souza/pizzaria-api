@@ -117,4 +117,12 @@ public class GlobalExceptionHandler {
         problem.setTitle("User Not Found");
         return  problem;
     }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ProblemDetail handleInvalidCredentials(InvalidCredentialsException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED, ex.getMessage());
+        problem.setTitle("Invalid credentials");
+        return problem;
+    }
 }
