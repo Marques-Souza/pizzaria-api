@@ -1,7 +1,7 @@
 package br.com.pizzaria.mapper;
 
 
-import br.com.pizzaria.dtos.CreateOrderRequestDto;
+import br.com.pizzaria.dtos.OrderRequestDto;
 import br.com.pizzaria.dtos.OrderItemResponseDto;
 import br.com.pizzaria.dtos.OrderResponseDto;
 import br.com.pizzaria.entity.Order;
@@ -20,7 +20,7 @@ public interface OrderMapper {
     @Mapping(target = "draft", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Order toEntity(CreateOrderRequestDto dto);
+    Order toEntity(OrderRequestDto dto);
 
     @Mapping(target = "table", source = "order.tableNumber")
     @Mapping(target = "items", source = "items")
