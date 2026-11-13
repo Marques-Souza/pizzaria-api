@@ -50,4 +50,9 @@ public class OrderController {
     }
 
 
+    @PatchMapping("/{orderId}/send")
+    public ResponseEntity<OrderDetailResponseDto> sendOrder(@PathVariable UUID orderId){
+        OrderDetailResponseDto response = orderService.sendOrder(orderId);
+        return ResponseEntity.ok(response);
+    }
 }

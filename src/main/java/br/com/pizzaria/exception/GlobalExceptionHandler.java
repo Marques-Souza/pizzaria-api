@@ -117,6 +117,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(OrderEmptyException.class)
+    public ProblemDetail handlerOrderEmpty(OrderEmptyException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Order Has No Items");
+        return problem;
+    }
+
     @ExceptionHandler(ProductInactiveException.class)
     public ProblemDetail handlerProductInactive(ProductInactiveException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(

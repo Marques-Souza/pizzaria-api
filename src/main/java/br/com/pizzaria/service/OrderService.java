@@ -85,4 +85,27 @@ public class OrderService {
         }
         orderItemRepository.delete(item);
     }
+
+    @Transactional
+    public OrderDetailResponseDto sendOrder(UUID orderId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found."));
+        if (!order.isDraft()){
+            throw new OrderNotDraftException("Order has already been sent.");
+        }
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrder_Id(orderId);
+        if (orderItems.isEmpty()) {
+            throw new OrderEmptyException("Cannot send an order without items.");
+        }
+
+        order.setDraft(false);
+        Order saved = orderRepository.save(order);
+
+        List<OrderDetailItemResponseDto> items = orderItems.stream()
+                .map(orderItemMapper::toDetailResponse)
+                .toList();
+
+        return orderMapper.toDetailResponse(saved, items);
+    }
 }
