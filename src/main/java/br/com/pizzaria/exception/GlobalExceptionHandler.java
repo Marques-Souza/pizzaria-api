@@ -101,6 +101,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler(OrderItemNotFoundException.class)
+    public ProblemDetail handlerOrderItemNotFound(OrderItemNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Order Item Not Found");
+        return problem;
+    }
+
     @ExceptionHandler(OrderNotDraftException.class)
     public ProblemDetail handlerOrderNotDraft(OrderNotDraftException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(

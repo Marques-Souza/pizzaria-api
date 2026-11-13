@@ -4,10 +4,7 @@ import br.com.pizzaria.dtos.*;
 import br.com.pizzaria.entity.Order;
 import br.com.pizzaria.entity.OrderItem;
 import br.com.pizzaria.entity.Product;
-import br.com.pizzaria.exception.OrderNotDraftException;
-import br.com.pizzaria.exception.OrderNotFoundException;
-import br.com.pizzaria.exception.ProductInactiveException;
-import br.com.pizzaria.exception.ProductNotFoundException;
+import br.com.pizzaria.exception.*;
 import br.com.pizzaria.mapper.OrderItemMapper;
 import br.com.pizzaria.mapper.OrderMapper;
 import br.com.pizzaria.repository.OrderItemRepository;
@@ -71,5 +68,21 @@ public class OrderService {
                         .map(orderItemMapper::toDetailResponse)
                         .toList();
         return orderMapper.toDetailResponse(order, items);
+    }
+
+    @Transactional
+    public void removeItem(UUID orderId, UUID itemId){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found."));
+        if (!order.isDraft()){
+            throw new OrderNotDraftException("Cannot remove items from an order that is not a draft");
+        }
+
+        OrderItem item = orderItemRepository.findById(itemId)
+                .orElseThrow(() -> new OrderItemNotFoundException("Order item not found."));
+        if (!item.getOrder().getId().equals(orderId)){
+            throw new OrderItemNotFoundException("Order item not found in this order.");
+        }
+        orderItemRepository.delete(item);
     }
 }
