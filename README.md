@@ -1,49 +1,64 @@
 # Pizzaria API
 
-API REST para gerenciamento de categorias, produtos, usuarios e pedidos de uma pizzaria. O projeto usa Java 25, Spring Boot, PostgreSQL, Spring Data JPA, Flyway, Spring Security com JWT, MapStruct e Cloudinary para imagens de produtos.
+Este projeto é uma API REST para ajudar no atendimento de uma pizzaria: dá para organizar categorias e produtos, receber pedidos e acompanhar cada pedido até a finalização. A ideia é manter o fluxo simples para quem atende no balcão e oferecer uma base segura para evoluir o sistema.
 
-## Requisitos
+## O que a API oferece
+
+- Cadastro e consulta de categorias.
+- Cadastro, edição, consulta e desativação de produtos.
+- Armazenamento de imagens de produtos no Cloudinary.
+- Cadastro de usuários e autenticação com JWT.
+- Criação de pedidos, gerenciamento dos itens e acompanhamento do preparo.
+- Documentação interativa das rotas com Swagger.
+
+## Tecnologias
+
+- Java 25 e Spring Boot
+- Spring Web MVC, Spring Data JPA e Spring Security
+- PostgreSQL e Flyway
+- JWT para autenticação
+- MapStruct para conversão entre entidades e DTOs
+- Cloudinary para imagens
+- JUnit, Mockito e Spring MockMvc para testes
+- Testcontainers para testes de integração com PostgreSQL
+- Springdoc OpenAPI / Swagger UI
+
+## Antes de começar
+
+Você vai precisar de:
 
 - JDK 25
-- Docker e Docker Compose
-- Maven (opcional; o projeto inclui Maven Wrapper)
-- Uma conta Cloudinary para upload de imagens de produtos
+- Docker Desktop e Docker Compose para subir o banco local
+- Uma conta Cloudinary para enviar imagens de produtos
 
-Configure o IntelliJ para usar JDK 25 tanto no Project SDK quanto no Maven Runner.
+O Maven já vem pelo **Maven Wrapper**, então não é necessário instalar o Maven separadamente. No IntelliJ, selecione o JDK 25 tanto no Project SDK quanto no Maven Runner.
 
-## Configuracao local
+## Configuração local
 
-Defina as variaveis de ambiente antes de iniciar a aplicacao:
-
-| Variavel | Uso |
-|---|---|
-| `DB_USER` | Usuario do PostgreSQL |
-| `DB_PASSWORD` | Senha do PostgreSQL |
-| `JWT_SECRET` | Chave Base64 para assinatura JWT; deve representar pelo menos 32 bytes |
-| `CLOUDINARY_URL` | URL de conexao da conta Cloudinary |
-
-Exemplo no PowerShell (substitua os valores pelos seus; nao versione credenciais):
+Antes de iniciar o projeto, configure as variáveis de ambiente abaixo. No PowerShell, substitua os valores de exemplo pelos seus dados:
 
 ```powershell
 $env:DB_USER = "seu_usuario"
 $env:DB_PASSWORD = "sua_senha"
 $env:JWT_SECRET = "sua_chave_base64"
-$env:CLOUDINARY_URL = "cloudinary://sua_api_key:sua_api_secret@seu_cloud_name"
+$env:CLOUDINARY_URL = "cloudinary://api_key:api_secret@seu_cloud_name"
 ```
 
-Gere uma chave JWT aleatoria com pelo menos 32 bytes usando PowerShell:
+O `JWT_SECRET` deve ser uma chave em Base64 que represente pelo menos 32 bytes. Para gerar uma chave aleatória no PowerShell:
 
 ```powershell
 [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(32))
 ```
 
-Inicie o banco configurado em `docker-compose.yaml`:
+Não publique essas credenciais nem as coloque no Git.
+
+Suba o PostgreSQL definido em `docker-compose.yaml`:
 
 ```powershell
 docker compose up -d db
 ```
 
-O PostgreSQL fica disponivel em `localhost:5555`; o banco e o usuario sao configurados por `POSTGRES_DB`, `DB_USER` e `DB_PASSWORD`. Ao iniciar a aplicacao, Flyway aplica as migrations e Hibernate valida o schema.
+O banco fica disponível em `localhost:5555`. O Compose cria o banco `pizzaria` usando `DB_USER` e `DB_PASSWORD`. Ao iniciar a aplicação, o Flyway aplica as migrations e o Hibernate valida se o schema corresponde às entidades. Alterações no banco devem ser feitas com novas migrations em `src/main/resources/db/migration`, não pelo Hibernate.
 
 Inicie a API:
 
@@ -51,52 +66,54 @@ Inicie a API:
 .\mvnw.cmd spring-boot:run
 ```
 
-A API fica disponivel em `http://localhost:8080`. Para parar o banco:
+A aplicação fica disponível em `http://localhost:8080`. Para parar o banco:
 
 ```powershell
 docker compose down
 ```
 
-O volume `pizzaria-data` preserva os dados entre reinicializacoes. Para apagar os dados, remova o volume explicitamente.
+O volume `pizzaria-data` mantém os dados entre reinicializações. Só remova o volume se realmente quiser apagar o banco local.
 
-## Estrutura
+## Swagger e documentação das rotas
 
-O codigo principal fica em `src/main/java/br/com/pizzaria`:
+Com a aplicação rodando, abra:
 
-- `controller`: endpoints HTTP
-- `service`: regras de negocio
-- `repository`: acesso a dados com Spring Data JPA
-- `entity`: entidades persistidas
-- `dtos`: contratos de entrada e resposta
-- `mapper`: conversoes MapStruct entre DTOs e entidades
-- `exception`: excecoes de negocio e respostas de erro
-- `config`: seguranca, JWT, senha e Cloudinary
+**[Swagger UI](http://localhost:8080/swagger-ui/index.html)**
 
-As migrations SQL ficam em `src/main/resources/db/migration`. O Hibernate usa `ddl-auto: validate`; alteracoes de schema devem ser feitas por novas migrations Flyway.
+O documento OpenAPI em JSON também fica disponível em `http://localhost:8080/v3/api-docs`. A interface permite consultar os parâmetros e exemplos das rotas e enviar requisições para a API.
 
-## Autenticacao e autorizacao
+Para testar uma rota protegida:
 
-As rotas, exceto `POST /users` e `POST /session`, exigem um JWT valido. Envie o token no header:
+1. Faça login em `POST /session`.
+2. Copie o token JWT retornado.
+3. Clique em **Authorize** no Swagger e informe o token.
+4. Execute a rota desejada.
+
+O Swagger está liberado sem autenticação. O contato da documentação é **Marques Souza**; ao clicar no e-mail, você pode iniciar uma mensagem para `marques.wsouza357@gmail.com`.
+
+## Autenticação e permissões
+
+O cadastro público (`POST /users`) cria usuários com o papel `STAFF`. O login (`POST /session`) valida e-mail e senha e retorna um JWT. Nas rotas protegidas, envie o token no cabeçalho:
 
 ```http
-Authorization: Bearer <token>
+Authorization: Bearer <seu-token>
 ```
 
-O login retorna o token. O cadastro publico cria usuarios com papel `STAFF`. Escritas de categoria e produto exigem papel `ADMIN`; leituras exigem autenticacao. No estado atual, endpoints de pedidos exigem JWT valido, sem restricao adicional de papel.
+As consultas e operações de pedido exigem autenticação. Criar, editar, desativar ou reativar categorias e produtos exige o papel `ADMIN`. O projeto não oferece uma rota pública para promover usuários a `ADMIN`; essa configuração deve ser feita por um processo administrativo seguro.
 
-## Endpoints
+## Rotas disponíveis
 
-`{id}`, `{orderId}` e `{itemId}` sao UUIDs. Salvo indicacao em contrario, endpoints protegidos exigem Bearer token.
+`{id}`, `{orderId}` e `{itemId}` representam UUIDs. As rotas marcadas como autenticadas exigem um JWT válido.
 
-### Usuarios e sessao
+### Usuários e autenticação
 
-| Metodo | Rota | Acesso | Descricao |
+| Método | Rota | Acesso | O que faz |
 |---|---|---|---|
-| `POST` | `/users` | Publico | Cadastra usuario com papel `STAFF` |
-| `POST` | `/session` | Publico | Autentica e retorna JWT |
-| `GET` | `/me` | Autenticado | Retorna o usuario do token |
+| `POST` | `/users` | Público | Cadastra um usuário como `STAFF` |
+| `POST` | `/session` | Público | Faz login e retorna um JWT |
+| `GET` | `/me` | Autenticado | Consulta os dados do usuário do token |
 
-Exemplo de cadastro:
+Exemplo de cadastro e login:
 
 ```json
 {
@@ -106,26 +123,19 @@ Exemplo de cadastro:
 }
 ```
 
-Corpo do login em `POST /session`:
-
-```json
-{
-  "email": "maria@example.com",
-  "password": "senha123"
-}
-```
+O login recebe `email` e `password`.
 
 ### Categorias
 
-| Metodo | Rota | Acesso | Descricao |
+| Método | Rota | Acesso | O que faz |
 |---|---|---|---|
-| `POST` | `/categories` | ADMIN | Cria categoria |
+| `POST` | `/categories` | `ADMIN` | Cria uma categoria |
 | `GET` | `/categories` | Autenticado | Lista categorias |
-| `GET` | `/categories/{id}` | Autenticado | Busca categoria |
-| `PATCH` | `/categories/{id}` | ADMIN | Atualiza categoria |
-| `DELETE` | `/categories/{id}` | ADMIN | Desativa categoria |
+| `GET` | `/categories/{id}` | Autenticado | Busca uma categoria |
+| `PATCH` | `/categories/{id}` | `ADMIN` | Atualiza uma categoria |
+| `DELETE` | `/categories/{id}` | `ADMIN` | Desativa uma categoria |
 
-Corpo de criacao:
+Exemplo de categoria:
 
 ```json
 {
@@ -136,32 +146,39 @@ Corpo de criacao:
 
 ### Produtos
 
-| Metodo | Rota | Acesso | Descricao |
+| Método | Rota | Acesso | O que faz |
 |---|---|---|---|
-| `POST` | `/products` | ADMIN | Cria produto com imagem |
-| `GET` | `/products/{id}` | Autenticado | Busca produto |
-| `GET` | `/products?page=0&size=10` | Autenticado | Lista produtos ativos, paginados |
-| `GET` | `/products?categoryId={id}` | Autenticado | Filtra produtos ativos por categoria |
-| `PATCH` | `/products/{id}` | ADMIN | Atualiza campos e/ou imagem |
-| `DELETE` | `/products/{id}` | ADMIN | Desativa produto |
-| `PUT` | `/products/{id}/reactivate` | ADMIN | Reativa produto |
+| `POST` | `/products` | `ADMIN` | Cadastra produto e imagem |
+| `GET` | `/products/{id}` | Autenticado | Busca um produto |
+| `GET` | `/products` | Autenticado | Lista produtos ativos com paginação |
+| `PATCH` | `/products/{id}` | `ADMIN` | Atualiza dados e/ou imagem |
+| `DELETE` | `/products/{id}` | `ADMIN` | Desativa um produto |
+| `PUT` | `/products/{id}/reactivate` | `ADMIN` | Reativa um produto |
 
-Criacao e atualizacao usam `multipart/form-data`. Os campos do produto sao enviados individualmente e o arquivo de imagem usa o nome `file`. Na criacao, envie `name`, `description`, `price`, `categoryId` e `file`; na atualizacao, todos os campos sao opcionais, mas deve ser enviado ao menos um campo ou uma imagem. O limite configurado para arquivo e requisicao e 5 MB.
+O cadastro e a atualização usam `multipart/form-data`. Para cadastrar, envie os campos `name`, `description`, `price` e `categoryId`, além do arquivo de imagem no campo `file`. Na atualização, os campos e a imagem são opcionais, mas é preciso enviar pelo menos uma alteração. O limite de upload é de 5 MB.
+
+É possível filtrar a lista pela categoria e controlar a paginação:
+
+```text
+GET /products?page=0&size=10&categoryId=<uuid-da-categoria>
+```
+
+O número da página começa em zero. Por padrão, os produtos são ordenados pelo nome em ordem decrescente.
 
 ### Pedidos
 
-| Metodo | Rota | Acesso | Descricao |
+| Método | Rota | Acesso | O que faz |
 |---|---|---|---|
-| `POST` | `/orders` | Autenticado | Cria pedido em rascunho |
-| `GET` | `/orders` | Autenticado | Lista pedidos paginados com itens |
-| `GET` | `/orders/{orderId}` | Autenticado | Busca pedido e itens |
-| `POST` | `/orders/{orderId}/items` | Autenticado | Adiciona produto ao rascunho |
-| `DELETE` | `/orders/{orderId}/items/{itemId}` | Autenticado | Remove item de rascunho |
-| `PATCH` | `/orders/{orderId}/send` | Autenticado | Envia pedido com itens para preparo |
-| `PATCH` | `/orders/{orderId}/finish` | Autenticado | Finaliza pedido enviado |
-| `DELETE` | `/orders/{orderId}` | Autenticado | Exclui pedido somente enquanto em rascunho |
+| `POST` | `/orders` | Autenticado | Cria um pedido em rascunho |
+| `GET` | `/orders` | Autenticado | Lista pedidos com paginação e itens |
+| `GET` | `/orders/{orderId}` | Autenticado | Consulta um pedido e seus itens |
+| `POST` | `/orders/{orderId}/items` | Autenticado | Adiciona um produto ao rascunho |
+| `DELETE` | `/orders/{orderId}/items/{itemId}` | Autenticado | Remove um item do rascunho |
+| `PATCH` | `/orders/{orderId}/send` | Autenticado | Envia o pedido para preparo |
+| `PATCH` | `/orders/{orderId}/finish` | Autenticado | Finaliza um pedido enviado |
+| `DELETE` | `/orders/{orderId}` | Autenticado | Exclui um pedido que ainda está em rascunho |
 
-Criacao do pedido:
+Para criar um pedido:
 
 ```json
 {
@@ -170,45 +187,60 @@ Criacao do pedido:
 }
 ```
 
-Inclusao de item:
+Para adicionar um produto:
 
 ```json
 {
-  "productId": "UUID_DO_PRODUTO",
+  "productId": "<uuid-do-produto>",
   "amount": 2
 }
 ```
 
-Os endpoints paginados aceitam os parametros Spring `page`, `size` e `sort`. A listagem de pedidos usa pagina de 10 itens por padrao, ordenada por `createdAt` decrescente. A paginacao e baseada em zero (`page=0` e a primeira pagina).
+Um pedido começa como rascunho. Enquanto estiver nessa etapa, é possível adicionar ou remover itens e excluir o pedido. Para enviar ao preparo, ele precisa ter ao menos um item. Depois de enviado, pode ser finalizado; pedidos enviados ou finalizados não podem ser excluídos pela API.
 
-### Estados do pedido
+A listagem de pedidos também aceita `page`, `size` e `sort`. Por padrão, retorna 10 pedidos por página, do mais recente para o mais antigo.
 
-- Ao criar, `draft=true` e `status=false`.
-- Enquanto `draft=true`, e permitido adicionar/remover itens ou excluir o pedido.
-- O envio exige ao menos um item e altera `draft` para `false`.
-- A finalizacao exige que o pedido ja tenha sido enviado e altera `status` para `true`.
-- Pedidos enviados ou finalizados nao podem ser excluidos pela rota de exclusao atual.
+## Respostas de erro
 
-## Validacao e erros
+As respostas de erro seguem o formato `ProblemDetail`. Entre os status mais comuns:
 
-Os DTOs validam os dados de entrada. Erros de negocio sao retornados como `ProblemDetail`, com campos como `status`, `title`, `detail` e `instance`. Exemplos:
+| Status | Significado |
+|---|---|
+| `400 Bad Request` | Dados enviados inválidos |
+| `401 Unauthorized` | Token ausente ou inválido |
+| `403 Forbidden` | Usuário autenticado sem permissão para a operação |
+| `404 Not Found` | Recurso não encontrado |
+| `409 Conflict` | Conflito, como recurso duplicado ou pedido vazio ao enviar |
 
-- `400 Bad Request`: dados invalidos
-- `401 Unauthorized`: token ausente ou invalido
-- `403 Forbidden`: papel sem permissao para a operacao
-- `404 Not Found`: recurso inexistente
-- `409 Conflict`: conflito de estado, categoria/produto duplicado ou pedido vazio ao enviar
+## Estrutura do projeto
 
-## Testes
+O código da aplicação está em `src/main/java/br/com/pizzaria`:
 
-Execute a suite automatizada com JDK 25:
+- `controller`: recebe as requisições HTTP e define as rotas.
+- `service`: concentra as regras de negócio.
+- `repository`: consultas e persistência com Spring Data JPA.
+- `entity`: entidades mapeadas para as tabelas do banco.
+- `dtos`: formatos de entrada e saída da API.
+- `mapper`: conversões entre DTOs e entidades com MapStruct.
+- `exception`: tratamento padronizado de erros.
+- `config`: configurações de segurança, JWT, OpenAPI e Cloudinary.
+
+As migrations do banco ficam em `src/main/resources/db/migration`. Os testes estão em `src/test/java`.
+
+## Executar os testes
+
+Para rodar a suíte completa:
 
 ```powershell
 .\mvnw.cmd test
 ```
 
-Os testes ficam em `src/test/java`. Para compilar sem executar os testes:
+Os testes unitários, de controllers e de segurança não precisam de um banco real. Os testes de integração com PostgreSQL usam Testcontainers e precisam do Docker Desktop funcionando. Se o Docker não estiver acessível, esses testes são ignorados; confira o resumo do Maven para confirmar se foram executados.
+
+Para executar somente os testes de integração:
 
 ```powershell
-.\mvnw.cmd -DskipTests compile
+.\mvnw.cmd -Dtest=PostgreSqlIntegrationTest test
 ```
+
+Os relatórios detalhados ficam em `target/surefire-reports`.
