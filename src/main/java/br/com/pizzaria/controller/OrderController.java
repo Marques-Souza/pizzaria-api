@@ -1,9 +1,6 @@
 package br.com.pizzaria.controller;
 
-import br.com.pizzaria.dtos.AddOrderItemRequestDto;
-import br.com.pizzaria.dtos.OrderItemResponseDto;
-import br.com.pizzaria.dtos.OrderRequestDto;
-import br.com.pizzaria.dtos.OrderResponseDto;
+import br.com.pizzaria.dtos.*;
 import br.com.pizzaria.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,4 +34,12 @@ public class OrderController {
         OrderItemResponseDto response = orderService.addItem(orderId, dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderDetailResponseDto> findOrderById(@PathVariable UUID orderId){
+        OrderDetailResponseDto response = orderService.findOrderById(orderId);
+        return ResponseEntity.ok(response);
+    }
+
+
 }

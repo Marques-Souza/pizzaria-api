@@ -2,6 +2,7 @@ package br.com.pizzaria.mapper;
 
 
 import br.com.pizzaria.dtos.AddOrderItemRequestDto;
+import br.com.pizzaria.dtos.OrderDetailItemResponseDto;
 import br.com.pizzaria.dtos.OrderItemResponseDto;
 import br.com.pizzaria.dtos.ProductInOrderResponseDto;
 import br.com.pizzaria.entity.OrderItem;
@@ -22,6 +23,8 @@ public interface OrderItemMapper {
     @Mapping(target = "orderId", source = "order.id")
     @Mapping(target = "productId", source = "product.id")
     OrderItemResponseDto toResponse(OrderItem item);
+
+    OrderDetailItemResponseDto toDetailResponse(OrderItem item);
 
     ProductInOrderResponseDto toResponse(Product product);
 }

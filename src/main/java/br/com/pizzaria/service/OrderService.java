@@ -1,9 +1,6 @@
 package br.com.pizzaria.service;
 
-import br.com.pizzaria.dtos.AddOrderItemRequestDto;
-import br.com.pizzaria.dtos.OrderItemResponseDto;
-import br.com.pizzaria.dtos.OrderRequestDto;
-import br.com.pizzaria.dtos.OrderResponseDto;
+import br.com.pizzaria.dtos.*;
 import br.com.pizzaria.entity.Order;
 import br.com.pizzaria.entity.OrderItem;
 import br.com.pizzaria.entity.Product;
@@ -62,5 +59,17 @@ public class OrderService {
 
         OrderItem saved = orderItemRepository.save(item);
         return orderItemMapper.toResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public OrderDetailResponseDto findOrderById(UUID id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found."));
+        List<OrderDetailItemResponseDto> items =
+                orderItemRepository.findAllByOrder_Id(id)
+                        .stream()
+                        .map(orderItemMapper::toDetailResponse)
+                        .toList();
+        return orderMapper.toDetailResponse(order, items);
     }
 }
