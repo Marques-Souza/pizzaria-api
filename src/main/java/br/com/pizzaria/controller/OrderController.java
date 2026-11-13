@@ -72,4 +72,10 @@ public class OrderController {
             Pageable pageable) {
         return ResponseEntity.ok(orderService.findAll(pageable));
     }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> delete(@PathVariable UUID orderId) {
+        orderService.delete(orderId);
+        return ResponseEntity.noContent().build();
+    }
 }

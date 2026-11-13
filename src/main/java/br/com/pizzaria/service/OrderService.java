@@ -163,4 +163,15 @@ public class OrderService {
                 itemsByOrderId.getOrDefault(order.getId(), List.of())
         ));
     }
+
+    @Transactional
+    public void delete(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found."));
+        if (!order.isDraft()) {
+            throw new OrderNotDraftException("Only draft orders can be deleted.");
+        }
+
+        orderRepository.delete(order);
+    }
 }
