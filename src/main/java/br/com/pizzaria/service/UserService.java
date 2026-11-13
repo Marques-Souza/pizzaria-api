@@ -4,12 +4,15 @@ import br.com.pizzaria.dtos.UserRequestDto;
 import br.com.pizzaria.dtos.UserResponseDto;
 import br.com.pizzaria.entity.User;
 import br.com.pizzaria.exception.UserAlreadyExistsException;
+import br.com.pizzaria.exception.UserNotFoundException;
 import br.com.pizzaria.mapper.UserMapper;
 import br.com.pizzaria.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,13 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(dto.password()));
         User saved = userRepository.save(user);
         return userMapper.toResponse(saved);
+    }
+
+    @Transactional(readOnly = true)
+    public  UserResponseDto findById(UUID id){
+        User user = userRepository.findById(id)
+                .orElseThrow(()-> new UserNotFoundException("User not found."));
+        return userMapper.toResponse(user);
     }
 
 
