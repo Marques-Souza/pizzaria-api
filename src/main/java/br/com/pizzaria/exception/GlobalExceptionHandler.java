@@ -125,6 +125,14 @@ public class GlobalExceptionHandler {
         return problem;
     }
 
+    @ExceptionHandler({OrderNotSentException.class, OrderAlreadyFinishedException.class})
+    public ProblemDetail handlerOrderStateConflict(RuntimeException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Order State Conflict");
+        return problem;
+    }
+
     @ExceptionHandler(ProductInactiveException.class)
     public ProblemDetail handlerProductInactive(ProductInactiveException ex) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(

@@ -108,4 +108,27 @@ public class OrderService {
 
         return orderMapper.toDetailResponse(saved, items);
     }
+
+    @Transactional
+    public OrderDetailResponseDto finishOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found."));
+        if (order.isDraft()) {
+            throw new OrderNotSentException("Cannot finish an order that has not been sent.");
+        }
+        if (order.isStatus()) {
+            throw new OrderAlreadyFinishedException("Order has already been finished.");
+        }
+
+        order.setStatus(true);
+        Order saved = orderRepository.save(order);
+
+        List<OrderDetailItemResponseDto> items =
+                orderItemRepository.findAllByOrder_Id(orderId)
+                        .stream()
+                        .map(orderItemMapper::toDetailResponse)
+                        .toList();
+
+        return orderMapper.toDetailResponse(saved, items);
+    }
 }
