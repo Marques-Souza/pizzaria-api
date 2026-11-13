@@ -7,9 +7,6 @@ import java.util.UUID;
 
 public record AddOrderItemRequestDto(
 
-        @NotNull(message = "Order ID is required")
-        UUID orderId,
-
         @NotNull(message = "Product ID is required")
         UUID productId,
 

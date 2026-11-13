@@ -93,6 +93,30 @@ public class GlobalExceptionHandler {
         return  problem;
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ProblemDetail handlerOrderNotFound(OrderNotFoundException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND, ex.getMessage());
+        problem.setTitle("Order Not Found");
+        return problem;
+    }
+
+    @ExceptionHandler(OrderNotDraftException.class)
+    public ProblemDetail handlerOrderNotDraft(OrderNotDraftException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Order Is Not Draft");
+        return problem;
+    }
+
+    @ExceptionHandler(ProductInactiveException.class)
+    public ProblemDetail handlerProductInactive(ProductInactiveException ex) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT, ex.getMessage());
+        problem.setTitle("Product Inactive");
+        return problem;
+    }
+
     @ExceptionHandler(ProductUpdateEmptyException.class)
     public ProblemDetail handleProductUpdateEmpty(ProductUpdateEmptyException ex){
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(

@@ -1,5 +1,7 @@
 package br.com.pizzaria.controller;
 
+import br.com.pizzaria.dtos.AddOrderItemRequestDto;
+import br.com.pizzaria.dtos.OrderItemResponseDto;
 import br.com.pizzaria.dtos.OrderRequestDto;
 import br.com.pizzaria.dtos.OrderResponseDto;
 import br.com.pizzaria.service.OrderService;
@@ -7,10 +9,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,5 +27,14 @@ public class OrderController {
         OrderResponseDto response = orderService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
 
+    }
+
+
+    @PostMapping("/{orderId}/items")
+    public ResponseEntity<OrderItemResponseDto> addItem(
+            @PathVariable UUID orderId,
+            @Valid @RequestBody AddOrderItemRequestDto dto){
+        OrderItemResponseDto response = orderService.addItem(orderId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
