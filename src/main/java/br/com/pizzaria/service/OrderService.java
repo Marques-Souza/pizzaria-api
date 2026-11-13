@@ -11,11 +11,15 @@ import br.com.pizzaria.repository.OrderItemRepository;
 import br.com.pizzaria.repository.OrderRepository;
 import br.com.pizzaria.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -130,5 +134,33 @@ public class OrderService {
                         .toList();
 
         return orderMapper.toDetailResponse(saved, items);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderDetailResponseDto> findAll(Pageable pageable) {
+        Page<Order> orders = orderRepository.findAll(pageable);
+
+        List<UUID> orderIds = orders.getContent()
+                .stream()
+                .map(Order::getId)
+                .toList();
+
+        Map<UUID, List<OrderDetailItemResponseDto>> itemsByOrderId =
+                orderIds.isEmpty()
+                        ? Map.of()
+                        : orderItemRepository.findAllByOrder_IdIn(orderIds)
+                        .stream()
+                        .collect(Collectors.groupingBy(
+                                item -> item.getOrder().getId(),
+                                Collectors.mapping(
+                                        orderItemMapper::toDetailResponse,
+                                        Collectors.toList()
+                                )
+                        ));
+
+        return orders.map(order -> orderMapper.toDetailResponse(
+                order,
+                itemsByOrderId.getOrDefault(order.getId(), List.of())
+        ));
     }
 }

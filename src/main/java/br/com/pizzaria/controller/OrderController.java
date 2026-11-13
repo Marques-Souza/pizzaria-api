@@ -4,6 +4,10 @@ import br.com.pizzaria.dtos.*;
 import br.com.pizzaria.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -60,5 +64,12 @@ public class OrderController {
     public ResponseEntity<OrderDetailResponseDto> finishOrder(@PathVariable UUID orderId) {
         OrderDetailResponseDto response = orderService.finishOrder(orderId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<OrderDetailResponseDto>> findAll(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable) {
+        return ResponseEntity.ok(orderService.findAll(pageable));
     }
 }
